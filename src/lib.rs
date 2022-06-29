@@ -5,5 +5,7 @@ pub mod sample;
 pub enum Event {
     Kick,
     Snare,
-    Hat,
+    ClosedHat,
+    Shaker,
+    Percussion,
 }

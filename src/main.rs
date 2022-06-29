@@ -2,6 +2,7 @@ use cloudrave::{sample::Samples, Event};
 use tokio_stream::{StreamExt, Stream};
 use rodio::{Source, OutputStream};
 use std::time::{Duration, Instant};
+use hex_literal::hex;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -10,12 +11,19 @@ async fn main() -> anyhow::Result<()> {
 }
 
 async fn get_stream() -> anyhow::Result<impl Stream<Item = Event>> {
+    let brlc_address = hex!("A9a55a81a4C085EC0C31585Aed4cFB09D78dfD53");
+    let pix_cashier_address = hex!("c8eb60d121EF768C94438a7F0a38AADfC401f301");
+
     let transport = web3::transports::WebSocket::new("wss://mainnet.cloudwalk.io/ws").await?;
     let web3 = web3::Web3::new(transport);
 
     let subscriber = web3.eth_subscribe();
-    let filter = web3::types::FilterBuilder::default()
-        .from_block(web3::types::BlockNumber::Latest)
+    let brlc_filter = web3::types::FilterBuilder::default()
+        .address(vec!(web3::types::H160(brlc_address)))
+        .build();
+
+    let pix_cashier_filter = web3::types::FilterBuilder::default()
+        .address(vec!(web3::types::H160(pix_cashier_address)))
         .build();
 
     let blocks = subscriber
@@ -24,11 +32,19 @@ async fn get_stream() -> anyhow::Result<impl Stream<Item = Event>> {
         .filter_map(log_error)
         .map(|_| Event::Kick);
 
-    let logs = subscriber
-        .subscribe_logs(filter)
+    let brlc_logs = subscriber
+        .subscribe_logs(brlc_filter)
         .await?
         .filter_map(log_error)
-        .map(|_| Event::Hat);
+        .map(|_| Event::Shaker);
+
+    let pix_cashier_logs = subscriber
+        .subscribe_logs(pix_cashier_filter)
+        .await?
+        .filter_map(log_error)
+        .map(|_| Event::Percussion);
+
+    let logs = brlc_logs.merge(pix_cashier_logs);
 
     Ok(blocks.merge(logs))
 }
@@ -41,7 +57,7 @@ where
     // Get a output stream handle to the default physical sound device
     let (_stream, output) = OutputStream::try_default()?;
 
-    let mut last_hat = Instant::now();
+    let mut last_closed_hat = Instant::now();
 
     while let Some(event) = stream.next().await {
         match event {
@@ -49,39 +65,42 @@ where
                 output.play_raw(samples.kicks[2].decoder()?.convert_samples())?;
 
                 output.play_raw(
-                    samples.kicks[0]
+                    samples.kicks[2]
                         .decoder()?
                         .delay(Duration::from_millis(500))
                         .convert_samples(),
                 )?;
-
                 output.play_raw(
-                    samples.snares[0]
+                    samples.closed_hats[0]
                         .decoder()?
-                        .delay(Duration::from_millis(470))
+                        .delay(Duration::from_millis(500))
                         .convert_samples(),
-                )?;
+                    )?;
+
             },
             Event::Snare => todo!(),
-            Event::Hat => {
-                if last_hat.elapsed().as_millis() > 200 {
+            Event::ClosedHat => todo!(),
+            Event::Percussion => {
+                output.play_raw(samples.percussions[0].decoder()?.convert_samples())?;
+            },
+            Event::Shaker => {
+                if last_closed_hat.elapsed().as_millis() > 500 {
                     output.play_raw(
-                        samples.hats[0]
+                        samples.shakers[0]
                             .decoder()?
-                            .delay(Duration::from_millis(250))
+                            .delay(Duration::from_millis(50))
                             .convert_samples(),
                     )?;
 
                     output.play_raw(
-                        samples.hats[2]
+                        samples.shakers[2]
                             .decoder()?
-                            .delay(Duration::from_millis(750))
+                            .delay(Duration::from_millis(500))
                             .convert_samples(),
                     )?;
                 }
 
-                last_hat = Instant::now();
-            },
+            }
         }
     }
 
