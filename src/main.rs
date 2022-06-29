@@ -1,42 +1,88 @@
-use cloudrave::Sound;
-use futures::StreamExt;
-use rodio::OutputStream;
-use rodio::Source;
-use std::time::Duration;
-
-// TODO restart if panic?
+use cloudrave::{sample::Samples, Event};
+use tokio_stream::{StreamExt, Stream};
+use rodio::{Source, OutputStream};
+use std::time::{Duration, Instant};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let sound = Sound::load("assets/kick.ogg")?;
-    // Get a output stream handle to the default physical sound device
-    let (_stream, stream_handle) = OutputStream::try_default()?;
+    let stream = get_stream().await?;
+    play(stream).await
+}
 
-    // let transport = web3::transports::Http::new("https://rpc.testnet.cloudwalk.io")?;
+async fn get_stream() -> anyhow::Result<impl Stream<Item = Event>> {
     let transport = web3::transports::WebSocket::new("wss://mainnet.cloudwalk.io/ws").await?;
     let web3 = web3::Web3::new(transport);
 
-    let brlc_contract = "0xA9a55a81a4C085EC0C31585Aed4cFB09D78dfD53";
+    let subscriber = web3.eth_subscribe();
+    let filter = web3::types::FilterBuilder::default()
+        .from_block(web3::types::BlockNumber::Latest)
+        .build();
 
-    // let filter = web3::types::FilterBuilder::default()
-    //     .from_block(web3::types::BlockNumber::Latest)
-    //     .build();
+    let blocks = subscriber
+        .subscribe_new_heads()
+        .await?
+        .filter_map(log_error)
+        .map(|_| Event::Kick);
 
-    // let mut logs = web3.eth_subscribe().subscribe_logs(filter).await?;
-    let mut logs = web3.eth_subscribe().subscribe_new_heads().await?;
+    let logs = subscriber
+        .subscribe_logs(filter)
+        .await?
+        .filter_map(log_error)
+        .map(|_| Event::Hat);
 
-    while let Some(result) = logs.next().await {
-        let log = result?;
-        println!("{:?}", log);
+    Ok(blocks.merge(logs))
+}
 
-        stream_handle.play_raw(sound.decoder().convert_samples());
-        stream_handle.play_raw(
-            sound
-                .decoder()
-                .delay(Duration::from_millis(500))
-                .convert_samples(),
-        );
+async fn play<S>(mut stream: S) -> anyhow::Result<()>
+where
+    S: Stream<Item = Event> + Unpin
+{
+    let samples = Samples::load()?;
+    // Get a output stream handle to the default physical sound device
+    let (_stream, output) = OutputStream::try_default()?;
+
+    let mut last_hat = Instant::now();
+
+    while let Some(event) = stream.next().await {
+        match event {
+            Event::Kick => {
+                output.play_raw(samples.kick.decoder()?.convert_samples())?;
+                output.play_raw(
+                    samples.kick
+                        .decoder()?
+                        .delay(Duration::from_millis(500))
+                        .convert_samples(),
+                )?;
+            },
+            Event::Snare => todo!(),
+            Event::Hat => {
+                if last_hat.elapsed().as_millis() > 300 {
+                    output.play_raw(
+                        samples.hat
+                            .decoder()?
+                            .delay(Duration::from_millis(300))
+                            .convert_samples(),
+                    )?;
+                }
+
+                last_hat = Instant::now();
+            },
+        }
     }
 
     Ok(())
+
+}
+
+fn log_error<T, E>(result: Result<T, E>) -> Option<T>
+where
+    E: std::error::Error,
+{
+    match result {
+        Ok(value) => Some(value),
+        Err(error) => {
+            eprintln!("error: {}", error);
+            None
+        },
+    }
 }
