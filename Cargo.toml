@@ -11,3 +11,4 @@ tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1.9"
 rodio = "0.15.0"
 anyhow = "1.0.58"
+glob = "0.3.0"

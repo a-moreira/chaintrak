@@ -46,19 +46,19 @@ where
     while let Some(event) = stream.next().await {
         match event {
             Event::Kick => {
-                output.play_raw(samples.kick.decoder()?.convert_samples())?;
+                output.play_raw(samples.kicks[2].decoder()?.convert_samples())?;
 
                 output.play_raw(
-                    samples.kick
+                    samples.kicks[0]
                         .decoder()?
                         .delay(Duration::from_millis(500))
                         .convert_samples(),
                 )?;
 
                 output.play_raw(
-                    samples.snare
+                    samples.snares[0]
                         .decoder()?
-                        .delay(Duration::from_millis(480))
+                        .delay(Duration::from_millis(470))
                         .convert_samples(),
                 )?;
             },
@@ -66,14 +66,14 @@ where
             Event::Hat => {
                 if last_hat.elapsed().as_millis() > 200 {
                     output.play_raw(
-                        samples.hat
+                        samples.hats[0]
                             .decoder()?
                             .delay(Duration::from_millis(250))
                             .convert_samples(),
                     )?;
 
                     output.play_raw(
-                        samples.hat
+                        samples.hats[2]
                             .decoder()?
                             .delay(Duration::from_millis(750))
                             .convert_samples(),

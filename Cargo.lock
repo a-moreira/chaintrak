@@ -192,6 +192,7 @@ name = "cloudrave"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "glob",
  "rodio",
  "tokio",
  "tokio-stream",
