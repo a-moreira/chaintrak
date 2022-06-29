@@ -35,12 +35,14 @@ impl Sample {
 pub struct Samples {
     pub kick: Sample,
     pub hat: Sample,
+    pub snare: Sample,
 }
 
 impl Samples {
     pub fn load() -> io::Result<Self> {
         let kick = Sample::load("assets/kick.ogg")?;
         let hat = Sample::load("assets/hat.ogg")?;
-        Ok(Self { kick, hat })
+        let snare = Sample::load("assets/snare.ogg")?;
+        Ok(Self { kick, hat, snare })
     }
 }

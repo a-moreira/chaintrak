@@ -47,20 +47,35 @@ where
         match event {
             Event::Kick => {
                 output.play_raw(samples.kick.decoder()?.convert_samples())?;
+
                 output.play_raw(
                     samples.kick
                         .decoder()?
                         .delay(Duration::from_millis(500))
                         .convert_samples(),
                 )?;
+
+                output.play_raw(
+                    samples.snare
+                        .decoder()?
+                        .delay(Duration::from_millis(480))
+                        .convert_samples(),
+                )?;
             },
             Event::Snare => todo!(),
             Event::Hat => {
-                if last_hat.elapsed().as_millis() > 300 {
+                if last_hat.elapsed().as_millis() > 200 {
                     output.play_raw(
                         samples.hat
                             .decoder()?
-                            .delay(Duration::from_millis(300))
+                            .delay(Duration::from_millis(250))
+                            .convert_samples(),
+                    )?;
+
+                    output.play_raw(
+                        samples.hat
+                            .decoder()?
+                            .delay(Duration::from_millis(750))
                             .convert_samples(),
                     )?;
                 }
