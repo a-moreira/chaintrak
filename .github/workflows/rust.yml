@@ -10,9 +10,37 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+
+  deps:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: deps
+        run: sudo apt install -y libasound2-dev build-essential libpulse-dev libdbus-1-dev sudo apt librust-alsa-sys-dev
+
+  fmt:
+  
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: fmt
+      run: cargo fmt --all
+      
+  clippy:
+  
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: clippy
+      run: cargo clippy
+      
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v3
