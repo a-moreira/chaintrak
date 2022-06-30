@@ -1,4 +1,4 @@
-use cloudrave::{sample::Samples, Event};
+use cloudrave::{contract::Contract, sample::Samples, Event};
 use tokio_stream::{StreamExt, Stream};
 use rodio::{Source, OutputStream};
 use std::time::{Duration, Instant};
@@ -16,20 +16,12 @@ async fn get_stream() -> anyhow::Result<impl Stream<Item = Event>> {
     let web3 = web3::Web3::new(transport);
     let subscriber = web3.eth_subscribe();
 
-    let brlc_address = hex!("A9a55a81a4C085EC0C31585Aed4cFB09D78dfD53");
-    let pix_cashier_address = hex!("c8eb60d121EF768C94438a7F0a38AADfC401f301");
-    let spin_machine_address = hex!("4F05d2E56B868361D2C8Bbd51B662C78296018A8");
-    let brlc_filter = web3::types::FilterBuilder::default()
-        .address(vec!(web3::types::H160(brlc_address)))
-        .build();
-
-    let pix_cashier_filter = web3::types::FilterBuilder::default()
-        .address(vec!(web3::types::H160(pix_cashier_address)))
-        .build();
-
-    let spin_machine_filter = web3::types::FilterBuilder::default()
-        .address(vec!(web3::types::H160(spin_machine_address)))
-        .build();
+    let brlc_address: &str = "A9a55a81a4C085EC0C31585Aed4cFB09D78dfD53";
+    let pix_cashier_address: &str = "c8eb60d121EF768C94438a7F0a38AADfC401f301";
+    let spin_machine_address: &str ="4F05d2E56B868361D2C8Bbd51B662C78296018A8";
+    let brlc_filter = Contract::new(brlc_address)::create_log_filter();
+    let pix_cashier_filter = Contract::new(pix_cashier_address)::create_log_filter();
+    let spin_machine_filter = Contract::new(spin_machine_address)::create_log_filter();
 
     let blocks = subscriber
         .subscribe_new_heads()
