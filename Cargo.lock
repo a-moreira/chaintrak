@@ -194,6 +194,7 @@ dependencies = [
  "anyhow",
  "glob",
  "hex-literal",
+ "rand",
  "rodio",
  "tokio",
  "tokio-stream",

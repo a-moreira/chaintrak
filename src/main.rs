@@ -3,6 +3,7 @@ use tokio_stream::{StreamExt, Stream};
 use rodio::{Source, OutputStream};
 use std::time::{Duration, Instant};
 use hex_literal::hex;
+use rand::Rng;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -11,19 +12,23 @@ async fn main() -> anyhow::Result<()> {
 }
 
 async fn get_stream() -> anyhow::Result<impl Stream<Item = Event>> {
-    let brlc_address = hex!("A9a55a81a4C085EC0C31585Aed4cFB09D78dfD53");
-    let pix_cashier_address = hex!("c8eb60d121EF768C94438a7F0a38AADfC401f301");
-
     let transport = web3::transports::WebSocket::new("wss://mainnet.cloudwalk.io/ws").await?;
     let web3 = web3::Web3::new(transport);
-
     let subscriber = web3.eth_subscribe();
+
+    let brlc_address = hex!("A9a55a81a4C085EC0C31585Aed4cFB09D78dfD53");
+    let pix_cashier_address = hex!("c8eb60d121EF768C94438a7F0a38AADfC401f301");
+    let spin_machine_address = hex!("4F05d2E56B868361D2C8Bbd51B662C78296018A8");
     let brlc_filter = web3::types::FilterBuilder::default()
         .address(vec!(web3::types::H160(brlc_address)))
         .build();
 
     let pix_cashier_filter = web3::types::FilterBuilder::default()
         .address(vec!(web3::types::H160(pix_cashier_address)))
+        .build();
+
+    let spin_machine_filter = web3::types::FilterBuilder::default()
+        .address(vec!(web3::types::H160(spin_machine_address)))
         .build();
 
     let blocks = subscriber
@@ -40,6 +45,12 @@ async fn get_stream() -> anyhow::Result<impl Stream<Item = Event>> {
 
     let pix_cashier_logs = subscriber
         .subscribe_logs(pix_cashier_filter)
+        .await?
+        .filter_map(log_error)
+        .map(|_| Event::ClosedHat);
+
+    let spin_machine_logs = subscriber
+        .subscribe_logs(spin_machine_filter)
         .await?
         .filter_map(log_error)
         .map(|_| Event::Percussion);
@@ -59,6 +70,8 @@ where
 
     let mut last_closed_hat = Instant::now();
 
+    let mut rng = rand::thread_rng();
+
     while let Some(event) = stream.next().await {
         match event {
             Event::Kick => {
@@ -70,36 +83,29 @@ where
                         .delay(Duration::from_millis(500))
                         .convert_samples(),
                 )?;
-                output.play_raw(
-                    samples.closed_hats[0]
-                        .decoder()?
-                        .delay(Duration::from_millis(500))
-                        .convert_samples(),
-                    )?;
 
             },
             Event::Snare => todo!(),
-            Event::ClosedHat => todo!(),
+            Event::ClosedHat => {
+                output.play_raw(samples.closed_hats[0].decoder()?.convert_samples())?;
+            },
             Event::Percussion => {
                 output.play_raw(samples.percussions[0].decoder()?.convert_samples())?;
             },
             Event::Shaker => {
-                if last_closed_hat.elapsed().as_millis() > 500 {
-                    output.play_raw(
-                        samples.shakers[0]
-                            .decoder()?
-                            .delay(Duration::from_millis(50))
-                            .convert_samples(),
-                    )?;
+                output.play_raw(
+                    samples.shakers[0]
+                        .decoder()?
+                        .delay(Duration::from_millis(rng.gen_range(200..500)))
+                        .convert_samples(),
+                )?;
 
-                    output.play_raw(
-                        samples.shakers[2]
-                            .decoder()?
-                            .delay(Duration::from_millis(500))
-                            .convert_samples(),
-                    )?;
-                }
-
+                output.play_raw(
+                    samples.shakers[2]
+                        .decoder()?
+                        .delay(Duration::from_millis(500))
+                        .convert_samples(),
+                )?;
             }
         }
     }
