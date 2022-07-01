@@ -33,7 +33,7 @@ impl Sample {
 #[derive(Debug, Clone)]
 pub struct Samples {
     pub kicks: Vec<Sample>,
-    pub closed_hats: Vec<Sample>,
+    pub hats: Vec<Sample>,
     pub snares: Vec<Sample>,
     pub shakers: Vec<Sample>,
     pub percussions: Vec<Sample>,
@@ -42,11 +42,11 @@ pub struct Samples {
 impl Samples {
     pub fn load() -> io::Result<Self> {
         let kicks = Self::load_files("assets/kick-*.ogg")?;
-        let closed_hats = Self::load_files("assets/closed_hat-*.ogg")?;
+        let hats = Self::load_files("assets/hat-*.ogg")?;
         let snares = Self::load_files("assets/snare-*.ogg")?;
         let shakers = Self::load_files("assets/shaker-*.ogg")?;
         let percussions = Self::load_files("assets/percussion-*.ogg")?;
-        Ok(Self { kicks, closed_hats, snares, shakers, percussions })
+        Ok(Self { kicks, hats, snares, shakers, percussions })
     }
 
     fn load_files(pattern: &str) -> io::Result<Vec<Sample>> {
