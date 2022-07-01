@@ -6,11 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-web3 = "0.17.0"
+web3 = "0.17"
 tokio = { version = "1", features = ["full"] }
-tokio-stream = "0.1.9"
-rodio = "0.15.0"
-anyhow = "1.0.58"
-glob = "0.3.0"
+tokio-stream = "0.1"
+rodio = "0.15"
+anyhow = "1.0"
+glob = "0.3"
 hex-literal = "0.3"
-rand = "0.8.3"
+rand = "0.8"
+log = "0.4"

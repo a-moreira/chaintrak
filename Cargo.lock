@@ -194,6 +194,7 @@ dependencies = [
  "anyhow",
  "glob",
  "hex-literal",
+ "log",
  "rand",
  "rodio",
  "tokio",
