@@ -41,11 +41,12 @@ pub struct Samples {
 
 impl Samples {
     pub fn load() -> io::Result<Self> {
-        let kicks = Self::load_files("assets/kick-*.ogg")?;
-        let hats = Self::load_files("assets/hat-*.ogg")?;
-        let snares = Self::load_files("assets/snare-*.ogg")?;
-        let shakers = Self::load_files("assets/shaker-*.ogg")?;
-        let percussions = Self::load_files("assets/percussion-*.ogg")?;
+        //let kicks = Self::load_files("assets/kick-*.ogg")?;
+        let kicks = Self::load_files("assets/synth-1.ogg")?;
+        let hats = Self::load_files("assets/bass-*.ogg")?;
+        let snares = Self::load_files("assets/synth-ep-*.ogg")?;
+        let shakers = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let percussions = Self::load_files("assets/synth-z-*.ogg")?;
         Ok(Self { kicks, hats, snares, shakers, percussions })
     }
 

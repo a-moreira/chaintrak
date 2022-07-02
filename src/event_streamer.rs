@@ -12,12 +12,14 @@ pub enum Event {
     Brlc,
     PixCashier,
     SpinMachine,
+    Compound,
 }
 
 pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
     let brlc_address = hex!("A9a55a81a4C085EC0C31585Aed4cFB09D78dfD53");
     let pix_cashier_address = hex!("c8eb60d121EF768C94438a7F0a38AADfC401f301");
     let spin_machine_address = hex!("4F05d2E56B868361D2C8Bbd51B662C78296018A8");
+    //let compound_address = hex!("");
 
     let brlc_filter = Contract::new(brlc_address)?.create_log_filter()?;
     let pix_cashier_filter = Contract::new(pix_cashier_address)?.create_log_filter()?;

@@ -12,12 +12,12 @@ where
     S: Stream<Item = Event> + Unpin
 {
     let (sender, receiver) = std::sync::mpsc::channel();
-
-    thread::spawn(|| {
-        let result = match mode {
+    thread::spawn(move || {
+        let result = match mode.as_str() {
             "rave" => drummer(receiver),
-            "relax" => todo()!,
-        }
+            "relax" => todo!(),
+            _  => panic!("pick one: rave or relax"),
+        };
 
         if let Err(error) = result {
             log::error!("{}", error);
@@ -49,6 +49,7 @@ fn drummer(events: Receiver<Event>) -> anyhow::Result<()> {
                 Ok(Event::PixCashier) => hat = true,
                 Ok(Event::SpinMachine) => percussion = true,
                 Ok(Event::Brlc) => shaker = true,
+                Ok(Event::Compound) => todo!(),
                 Err(TryRecvError::Empty) => break,
                 Err(TryRecvError::Disconnected) => return Ok(()),
             };
