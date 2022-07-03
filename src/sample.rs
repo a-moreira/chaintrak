@@ -44,11 +44,11 @@ impl Samples {
         let percussions = Self::load_files("assets/synth-jazz-*.ogg")?;
         let synths = Self::load_files("assets/synth-jazz-*.ogg")?;
         let pads = Self::load_files("assets/synth-jazz-*.ogg")?;
-        let jazz_loops = Self::load_files("assets/jazz-drums.ogg")?;
-        let basses = Self::load_files("assets/synth-jazz-*.ogg")?;
-        let ambiances = Self::load_files("assets/synth-jazz-*.ogg")?;
-        let saxes = Self::load_files("assets/synth-jazz-*.ogg")?;
-        let pianos = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let jazz_loops = Self::load_files("assets/jazz-drums-*.ogg")?;
+        let basses = Self::load_files("assets/bass-*.ogg")?;
+        let ambiances = Self::load_files("assets/synth-badger-*.ogg")?;
+        let saxes = Self::load_files("assets/sax-*.ogg")?;
+        let pianos = Self::load_files("assets/synth-ep-*.ogg")?;
         Ok(Self {
             shakers,
             percussions,
