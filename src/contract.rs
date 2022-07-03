@@ -13,7 +13,7 @@ impl Contract {
 
     pub fn create_log_filter(self) -> anyhow::Result<web3::types::Filter> {
         let log_filter = web3::types::FilterBuilder::default()
-            .address(vec!(self.address))
+            .address(vec![self.address])
             .build();
 
         Ok(log_filter)

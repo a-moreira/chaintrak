@@ -1,10 +1,5 @@
-use std::{
-    convert::AsRef,
-    fs,
-    sync::Arc,
-    io, path::Path
-};
 use rodio::{decoder::DecoderError, Decoder};
+use std::{convert::AsRef, fs, io, path::Path, sync::Arc};
 
 #[derive(Debug, Clone)]
 pub struct Sample(Arc<Vec<u8>>);
@@ -32,22 +27,39 @@ impl Sample {
 
 #[derive(Debug, Clone)]
 pub struct Samples {
-    pub kicks: Vec<Sample>,
-    pub hats: Vec<Sample>,
-    pub snares: Vec<Sample>,
     pub shakers: Vec<Sample>,
     pub percussions: Vec<Sample>,
+    pub synths: Vec<Sample>,
+    pub pads: Vec<Sample>,
+    pub jazz_loops: Vec<Sample>,
+    pub basses: Vec<Sample>,
+    pub ambiances: Vec<Sample>,
+    pub saxes: Vec<Sample>,
+    pub pianos: Vec<Sample>,
 }
 
 impl Samples {
     pub fn load() -> io::Result<Self> {
-        //let kicks = Self::load_files("assets/kick-*.ogg")?;
-        let kicks = Self::load_files("assets/synth-1.ogg")?;
-        let hats = Self::load_files("assets/bass-*.ogg")?;
-        let snares = Self::load_files("assets/synth-ep-*.ogg")?;
-        let shakers = Self::load_files("assets/synth-jazz-*.ogg")?;
-        let percussions = Self::load_files("assets/synth-z-*.ogg")?;
-        Ok(Self { kicks, hats, snares, shakers, percussions })
+        let shakers = Self::load_files("assets/synth-ep-*.ogg")?;
+        let percussions = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let synths = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let pads = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let jazz_loops = Self::load_files("assets/jazz-drums.ogg")?;
+        let basses = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let ambiances = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let saxes = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let pianos = Self::load_files("assets/synth-jazz-*.ogg")?;
+        Ok(Self {
+            shakers,
+            percussions,
+            synths,
+            pads,
+            jazz_loops,
+            basses,
+            ambiances,
+            saxes,
+            pianos,
+        })
     }
 
     fn load_files(pattern: &str) -> io::Result<Vec<Sample>> {
