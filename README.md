@@ -1,6 +1,9 @@
-## cloudrave 😎
+## chaintrak
 
-events from the [CloudWalk Mainnet](https://explorer.mainnet.cloudwalk.io/) and our smart contracts are mapped into one-shot samples to create generative dance music
+events from the [CloudWalk Mainnet](https://explorer.mainnet.cloudwalk.io/) are mapped into short musical samples
 
+just pick a vibe:
 
-on-chain party offered by CloudWalk Networks 🔥
+> jazz 🎷
+
+> ambient 😶‍🌫️
