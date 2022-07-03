@@ -92,8 +92,6 @@ fn play_jazz(events: Receiver<Event>) -> anyhow::Result<()> {
 
             output.play_raw(bass.decoder()?.convert_samples())?;
         }
-
-        thread::sleep(Duration::from_millis(250));
     }
 }
 
@@ -159,6 +157,6 @@ fn play_ambient(events: Receiver<Event>) -> anyhow::Result<()> {
             // )?;
         }
 
-        thread::sleep(Duration::from_millis(250));
+        thread::sleep(Duration::from_millis(150));
     }
 }
