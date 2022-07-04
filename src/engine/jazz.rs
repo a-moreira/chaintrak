@@ -54,6 +54,7 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
         }
 
         if sax {
+            log::info!("Oh yeah 🎷");
             let sax = &samples.saxes.choose(&mut rng).context("no saxes")?;
             output.play_raw(sax.decoder()?.convert_samples())?;
         }
