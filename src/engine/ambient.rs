@@ -37,6 +37,7 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
         }
 
         if synth {
+            log::info!("😌🎹");
             let synth = &samples.synths.choose(&mut rng).context("no synths")?;
             output.play_raw(synth.decoder()?.convert_samples())?;
         }
