@@ -1,4 +1,4 @@
-use std::pin::Pin;
+use std::{fmt::Debug, pin::Pin};
 
 use hex_literal::hex;
 use tokio_stream::{Stream, StreamExt, StreamMap};
@@ -37,7 +37,7 @@ pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
             subscriber
                 .subscribe_new_heads()
                 .await?
-                .filter_map(log_error)
+                .filter_map(log_event)
                 .map(|_| Event::Block),
         ),
     );
@@ -48,7 +48,7 @@ pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
             subscriber
                 .subscribe_logs(brlc_filter)
                 .await?
-                .filter_map(log_error)
+                .filter_map(log_event)
                 .map(|_| Event::Brlc),
         ),
     );
@@ -59,7 +59,7 @@ pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
             subscriber
                 .subscribe_logs(pix_cashier_filter)
                 .await?
-                .filter_map(log_error)
+                .filter_map(log_event)
                 .map(|_| Event::PixCashier),
         ),
     );
@@ -70,7 +70,7 @@ pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
             subscriber
                 .subscribe_logs(spin_machine_filter)
                 .await?
-                .filter_map(log_error)
+                .filter_map(log_event)
                 .map(|_| Event::SpinMachine),
         ),
     );
@@ -81,7 +81,7 @@ pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
             subscriber
                 .subscribe_logs(compound_filter)
                 .await?
-                .filter_map(log_error)
+                .filter_map(log_event)
                 .map(|_| Event::Compound),
         ),
     );
@@ -89,9 +89,18 @@ pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
     Ok(stream.map(|(_, event)| event))
 }
 
-fn log_error<T, E>(result: Result<T, E>) -> Option<T>
+fn log_event<T, E>(result: Result<T, E>) -> Option<T>
 where
     E: std::error::Error,
 {
-    result.map_err(|error| log::error!("{}", error)).ok()
+    match result {
+        Ok(event) => {
+            log::info!("Event: {}", std::any::type_name::<T>());
+            Some(event)
+        }
+        Err(error) => {
+            log::error!("{}", error);
+            None
+        }
+    }
 }
