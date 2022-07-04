@@ -54,7 +54,7 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
         }
 
         if sax {
-            log::info!("Oh yeah 🎷");
+            log::info!("epic sax guy 🎷");
             let sax = &samples.saxes.choose(&mut rng).context("no saxes")?;
             output.play_raw(sax.decoder()?.convert_samples())?;
         }
@@ -65,6 +65,7 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
             output.play_raw(bass.decoder()?.convert_samples())?;
         }
 
-        thread::sleep(Duration::from_millis(10));
+        // sleep to avoid looping too much
+        thread::sleep(Duration::from_millis(20));
     }
 }

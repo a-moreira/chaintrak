@@ -24,23 +24,20 @@ sudo apt update && sudo apt install -y libasound2-dev pkg-config
 ```
 
 - install the Rust toolchain
-- run `cargo build --release`
+- run `cargo build --release --path <PATH>` and choose where to install the binary.
 
 ##### listen
-- start the application with cargo or directly running the binary and pick your vibe:
+- start the application by picking your current vibe:
 
 ``` sh
-cargo run -- jazz
-```
-or
-
-``` sh
-./target/release/chaintrak ambient
+chaintrak jazz
+chaintrak ambient
 ```
 
 #### TODO
 - lazy load of samples depending on the vibe
 - normalize volumes 
+- add more vibez
 
 #### license
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
