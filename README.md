@@ -30,12 +30,12 @@ sudo apt update && sudo apt install -y libasound2-dev pkg-config
 - start the application with cargo or directly running the binary and pick your vibe:
 
 ``` sh
-cargo run -- --vibe jazz
+cargo run -- jazz
 ```
 or
 
 ``` sh
-./target/release/chaintrak --vibe ambient
+./target/release/chaintrak ambient
 ```
 
 #### TODO
