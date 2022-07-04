@@ -95,7 +95,9 @@ where
 {
     match result {
         Ok(event) => {
-            log::info!("Event: {}", std::any::type_name::<T>());
+            let type_name = std::any::type_name::<T>();
+            let name = type_name.rsplit("::").next().unwrap_or(type_name);
+            log::info!("Event: {}", name);
             Some(event)
         }
         Err(error) => {
