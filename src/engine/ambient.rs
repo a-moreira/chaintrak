@@ -60,7 +60,7 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
             output.play_raw(badger.decoder()?.convert_samples())?;
         }
 
-        thread::sleep(Duration::from_millis(30));
+        thread::sleep(Duration::from_millis(10));
     }
 }
 
