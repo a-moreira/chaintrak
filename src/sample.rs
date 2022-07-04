@@ -27,36 +27,40 @@ impl Sample {
 
 #[derive(Debug, Clone)]
 pub struct Samples {
-    pub shakers: Vec<Sample>,
+    pub badgers: Vec<Sample>,
     pub percussions: Vec<Sample>,
     pub synths: Vec<Sample>,
     pub pads: Vec<Sample>,
     pub jazz_loops: Vec<Sample>,
     pub basses: Vec<Sample>,
-    pub ambiances: Vec<Sample>,
+    pub ambiences: Vec<Sample>,
+    pub soundscapes: Vec<Sample>,
     pub saxes: Vec<Sample>,
     pub pianos: Vec<Sample>,
 }
 
 impl Samples {
     pub fn load() -> io::Result<Self> {
-        let shakers = Self::load_files("assets/synth-ep-*.ogg")?;
-        let percussions = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let badgers = Self::load_files("assets/synth-badger-*.ogg")?;
+        let ambiences = Self::load_files("assets/synth-new-*.ogg")?;
         let synths = Self::load_files("assets/synth-jazz-*.ogg")?;
-        let pads = Self::load_files("assets/synth-jazz-*.ogg")?;
+        let pads = Self::load_files("assets/synth-z-*.ogg")?;
+        let soundscapes = Self::load_files("assets/synth-1.ogg")?;
+
+        let percussions = Self::load_files("assets/shaker-*.ogg")?;
         let jazz_loops = Self::load_files("assets/jazz-drums-*.ogg")?;
         let basses = Self::load_files("assets/bass-*.ogg")?;
-        let ambiances = Self::load_files("assets/synth-badger-*.ogg")?;
         let saxes = Self::load_files("assets/sax-*.ogg")?;
         let pianos = Self::load_files("assets/synth-ep-*.ogg")?;
         Ok(Self {
-            shakers,
+            badgers,
+            ambiences,
             percussions,
             synths,
             pads,
             jazz_loops,
             basses,
-            ambiances,
+            soundscapes,
             saxes,
             pianos,
         })

@@ -103,27 +103,27 @@ fn play_ambient(events: Receiver<Event>) -> anyhow::Result<()> {
     let mut rng = rand::thread_rng();
 
     loop {
-        let mut ambiance = false;
+        let mut ambience = false;
+        let mut soundscape = false;
         let mut synth = false;
         let mut pad = false;
-        let mut percussion = false;
-        let mut bass = false;
+        let mut badger  = false;
         loop {
             match events.try_recv() {
-                Ok(Event::Block) => ambiance = true,
-                Ok(Event::PixCashier) => pad = true,
+                Ok(Event::Block) => soundscape = true,
+                Ok(Event::PixCashier) => badger = true,
                 Ok(Event::SpinMachine) => synth = true,
-                Ok(Event::Brlc) => bass = true,
-                Ok(Event::Compound) => percussion = true,
+                Ok(Event::Brlc) => pad = true,
+                Ok(Event::Compound) => ambience = true,
                 Err(TryRecvError::Empty) => break,
                 Err(TryRecvError::Disconnected) => return Ok(()),
             };
         }
 
-        if ambiance {
-            let ambiance = samples.ambiances.choose(&mut rng).context("no ambiances")?;
+        if ambience {
+            let ambience = samples.ambiences.choose(&mut rng).context("no ambiances")?;
 
-            output.play_raw(ambiance.decoder()?.convert_samples())?;
+            output.play_raw(ambience.decoder()?.convert_samples())?;
         }
 
         if synth {
@@ -131,12 +131,12 @@ fn play_ambient(events: Receiver<Event>) -> anyhow::Result<()> {
             output.play_raw(synth.decoder()?.convert_samples())?;
         }
 
-        if percussion {
-            let perc = &samples
-                .percussions
+        if soundscape {
+            let soundscape = &samples
+                .soundscapes
                 .choose(&mut rng)
-                .context("no percussion")?;
-            output.play_raw(perc.decoder()?.convert_samples())?;
+                .context("no soundscape")?;
+            output.play_raw(soundscape.decoder()?.convert_samples())?;
         }
 
         if pad {
@@ -144,10 +144,10 @@ fn play_ambient(events: Receiver<Event>) -> anyhow::Result<()> {
             output.play_raw(pad.decoder()?.convert_samples())?;
         }
 
-        if bass {
-            let bass = samples.basses.choose(&mut rng).context("no basses")?;
+        if badger {
+            let badger = samples.badgers.choose(&mut rng).context("no badger")?;
 
-            output.play_raw(bass.decoder()?.convert_samples())?;
+            output.play_raw(badger.decoder()?.convert_samples())?;
 
             // output.play_raw(
             //     bass
@@ -157,6 +157,6 @@ fn play_ambient(events: Receiver<Event>) -> anyhow::Result<()> {
             // )?;
         }
 
-        thread::sleep(Duration::from_millis(150));
+        // thread::sleep(Duration::from_millis(150));
     }
 }
