@@ -1,4 +1,4 @@
-use std::sync::mpsc::{Receiver, TryRecvError};
+use std::{sync::mpsc::{Receiver, TryRecvError}, time::Duration, thread};
 
 use anyhow::Context;
 use rand::prelude::SliceRandom;
@@ -64,5 +64,7 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
 
             output.play_raw(bass.decoder()?.convert_samples())?;
         }
+
+        thread::sleep(Duration::from_millis(30));
     }
 }

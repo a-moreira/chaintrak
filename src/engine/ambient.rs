@@ -1,4 +1,4 @@
-use std::sync::mpsc::{Receiver, TryRecvError};
+use std::{sync::mpsc::{Receiver, TryRecvError}, thread, time::Duration};
 
 use anyhow::Context;
 use rand::prelude::SliceRandom;
@@ -33,7 +33,6 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
 
         if ambience {
             let ambience = samples.ambiences.choose(&mut rng).context("no ambiances")?;
-
             output.play_raw(ambience.decoder()?.convert_samples())?;
         }
 
@@ -57,18 +56,10 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
 
         if badger {
             let badger = samples.badgers.choose(&mut rng).context("no badger")?;
-
             output.play_raw(badger.decoder()?.convert_samples())?;
-
-            // output.play_raw(
-            //     bass
-            //         .decoder()?
-            //         .delay(Duration::from_millis(500))
-            //         .convert_samples(),
-            // )?;
         }
 
-        // thread::sleep(Duration::from_millis(150));
+        thread::sleep(Duration::from_millis(30));
     }
 }
 
