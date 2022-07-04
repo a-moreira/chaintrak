@@ -23,9 +23,9 @@ pub fn play(events: Receiver<Event>) -> anyhow::Result<()> {
             match events.try_recv() {
                 Ok(Event::Block) => soundscape = true,
                 Ok(Event::PixCashier) => badger = true,
-                Ok(Event::SpinMachine) => synth = true,
-                Ok(Event::Brlc) => pad = true,
-                Ok(Event::Compound) => ambience = true,
+                Ok(Event::SpinMachine) => ambience = true,
+                Ok(Event::Brlc) => synth = true,
+                Ok(Event::Compound) => pad = true,
                 Err(TryRecvError::Empty) => break,
                 Err(TryRecvError::Disconnected) => return Ok(()),
             };

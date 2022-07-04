@@ -10,7 +10,10 @@ pick one:
 
 
 ### install
-you can either [download the binary](https://github.com/arthur-cw/chaintrak/releases) or build it from source yourself
+you can either:
+- [download the binary](https://github.com/arthur-cw/chaintrak/releases)
+- build it from source
+- use Docker
 
 ##### build from source
 - install dependencies. the main one is ALSA, check the name of the libs for your OS. no Windows support for now, sorry.
@@ -30,6 +33,29 @@ sudo apt update && sudo apt install -y libasound2-dev pkg-config
 ``` sh
 ./target/release/chaintrak jazz
 ./target/release/chaintrak ambient
+```
+
+##### use Docker
+use `sudo` if necessary
+
+first build it (only needs to be done once)
+``` sh
+docker build -t chaintrak .
+```
+
+then simply run it whenever you want and choose the vibe you're into 
+``` sh
+docker run -it --rm --name chaintrak --device /dev/snd chaintrak jazz
+```
+or
+``` sh
+docker run -it --rm --name chaintrak --device /dev/snd chaintrak ambient
+```
+
+to stop the application:
+
+``` sh
+docker stop chaintrak
 ```
 
 #### TODO
