@@ -1,18 +1,9 @@
-use std::{fmt::Debug, pin::Pin};
+use std::pin::Pin;
 
 use hex_literal::hex;
 use tokio_stream::{Stream, StreamExt, StreamMap};
 
-use crate::contract::Contract;
-
-#[derive(Debug, Copy, Clone)]
-pub enum Event {
-    Block,
-    Brlc,
-    PixCashier,
-    SpinMachine,
-    Compound,
-}
+use super::{contract::Contract, Event};
 
 pub async fn start() -> anyhow::Result<impl Stream<Item = Event>> {
     let brlc_address = hex!("A9a55a81a4C085EC0C31585Aed4cFB09D78dfD53");

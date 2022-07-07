@@ -1,11 +1,12 @@
 mod ambient;
 mod jazz;
+mod sample;
 
-use std::thread;
+use rodio::OutputStream;
+use tokio_stream::Stream;
 
-use tokio_stream::{Stream, StreamExt};
-
-use crate::event_streamer::Event;
+use crate::events::Event;
+use self::sample::Samples;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Program {
@@ -13,25 +14,19 @@ pub enum Program {
     Jazz,
 }
 
-pub async fn play<S>(mut events: S, program: Program) -> anyhow::Result<()>
-where
-    S: Stream<Item = Event> + Unpin,
-{
-    let (sender, receiver) = std::sync::mpsc::channel();
-    thread::spawn(move || {
-        let result = match program {
-            Program::Jazz => jazz::play(receiver),
-            Program::Ambient => ambient::play(receiver),
-        };
+impl Program {
+    pub async fn play<S>(&self, events: S) -> anyhow::Result<()>
+    where
+        S: Stream<Item = Event> + Unpin,
+    {
+        let samples = Samples::load()?;
+        // Get a output stream handle to the default physical sound device
+        let (_stream, output) = OutputStream::try_default()?;
 
-        if let Err(error) = result {
-            log::error!("{}", error);
+        match self {
+            Program::Jazz => jazz::play(&samples, events, &output).await,
+            Program::Ambient => ambient::play(&samples, events, &output).await,
         }
-    });
-
-    while let Some(event) = events.next().await {
-        sender.send(event)?;
     }
 
-    Ok(())
 }
